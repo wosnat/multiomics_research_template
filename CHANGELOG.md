@@ -11,11 +11,85 @@ explorer pin lives in `pyproject.toml` and the KG version comes from
 
 ## [Unreleased]
 
+## [0.2.0-alpha.1] — 2026-08-30
+
+Second dogfood harvest, carried in from the consumer clone that ran the arc end
+to end (which organic carbon compounds *Alteromonas* takes up in coculture with
+*Prochlorococcus*). Minor bump rather than patch: the analysis folder layout
+changes, which is breaking for anyone mid-analysis — existing analyses keep
+their numbered structure as git history; the new arc applies to new analyses.
+Ships alongside KG `0.1.0-alpha.7` and explorer `v0.1.0-alpha.5`.
+
 ### Changed
-- Pinned to the latest knowledge-graph tools (explorer v0.1.0-alpha.4) — run
-  `uv sync` after pulling. Fixes a result-flattening bug: queries that mix
-  different `gene_derived_metrics` kinds no longer silently drop the scalar
-  `value` column when converting tool output to a dataframe.
+- **Research methodology restructured from a 6-step flow into a two-phase arc:
+  Plan → Run.** The Plan phase is one grounded `superpowers:brainstorming`
+  conversation converging on a single `proposal.md` (question + KG entries +
+  *enumerated* framing — hypothesis, approach, an explicit statistics decision,
+  and a named validation set), committed once. The Run phase is three milestones
+  (`methods/` → `analysis/` → `evaluation/`, one commit each) advancing through
+  `co-define → do → show → explore → decide`. The old `1_question/` … `6_evaluate/`
+  numbered folders are replaced by `proposal.md` + the three named milestone
+  folders. Execution (KG queries, scripts) is delegated to a coding subagent
+  (`superpowers:subagent-driven-development`) that returns artifacts, not
+  conclusions; the main thread owns `notebook.md` and all judgment. The hard
+  gates were re-lettered (GATE A–E); critical review now runs on the proposal
+  and at the analysis and evaluation milestones.
+- **The arc hardened by its first full dogfood.** The four places it fell short
+  were fixed:
+  - **The methods milestone now gets an automatic critical review whenever it
+    produces a data file** later milestones consume — a parts list, a curated
+    candidate set, a classification table. Such a file carries claims (substrate
+    labels, confidence flags, class assignments) that every downstream number
+    inherits, and later milestones read it as a trusted input, so nothing else
+    re-checks it. Run on demand in the dogfood, that review found a regulatory
+    protein sitting in the candidate set as a confident sugar importer, plus a
+    gene count cited from the KG that was 30% high and had already reached the
+    paper. A methods milestone that only produces a tested function still gets
+    the review only on request.
+  - **A milestone that keeps producing after its review gets a second,
+    delta-only pass.** Exploration happens *after* the critic by construction —
+    you ask for follow-ups, and new figures and claims land during decide. In
+    the dogfood the first pass came back clean and the delta pass over what
+    followed caught a figure caption citing the wrong module's number, which had
+    inverted the interpretation drawn from it.
+  - **Toy tests use the real data's form, and one real row is spot-run by hand.**
+    A green suite proves nothing when the fixture's values are the wrong type: in
+    the dogfood, 27 passing tests hid a string-vs-boolean bug that would have
+    collapsed every control class the moment the scorer met a real CSV.
+  - **The decide gate now checks the friction log** — every friction the notebook
+    points at actually exists, and a review finding that exposed a gap the plan
+    didn't anticipate is logged as friction, not only as a fix. The log tends to
+    go quiet in exactly the late milestones where the lessons are most expensive.
+- **The framing now states what a MISS looks like, not only a HIT.** Every
+  proposal names in advance the result that would signal "no real signal" and a
+  pre-registered expected-negative class that should *not* score if the signal is
+  genuine — so a true null and a noise result are distinguishable. Both dogfood
+  runs' only clean single-module hits were expected-negatives, which is exactly
+  what let a negative be read as real rather than as a failed method. A null is a
+  valid outcome.
+- Pinned to the latest knowledge-graph tools (explorer v0.1.0-alpha.5, paired
+  with KG 0.1.0-alpha.7) — run `uv sync` after pulling. See the explorer and KG
+  release notes for what the graph can now answer; the KG's `mcp_min_version`
+  moves to `0.1.0a5`, so older explorer pins fail preflight's contract check.
+- Pinned to explorer v0.1.0-alpha.4 (superseded above in the same release).
+  Fixed a result-flattening bug: queries that mix different
+  `gene_derived_metrics` kinds no longer silently drop the scalar `value` column
+  when converting tool output to a dataframe.
+
+### Added
+- **`critical-review` skill** — a fresh-context critic subagent that re-checks a
+  claim-bearing artifact against its own files, never against the author's
+  narrative. Lens matched to the milestone (interpretation-only on the proposal
+  and evaluation; data-integrity + interpretation on analysis and data-emitting
+  methods), findings cited by file, column, and number; the author dispositions
+  each one (fixed / disputed / deferred) before the researcher sees the milestone.
+- `run_cypher` added to the pre-approved KG tools — the critic uses it to
+  spot-check a single claim against the raw graph.
+- `docs/methodology-review-2026-08.md` — what the first full dogfood showed, with
+  the evidence behind each of the changes above, plus four further findings that
+  occurred only once and are being watched rather than acted on.
+- `docs/methodology-test-brief.md` — the brief for the next round: whether the
+  four changes earn their place and whether the four watch items recur.
 
 ### Fixed
 - Preflight no longer crashes on Windows when printing its success line — the

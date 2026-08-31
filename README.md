@@ -117,7 +117,7 @@ works identically on Linux, Windows 11, and Remote-SSH.
 
 Open this folder in VS Code. When prompted, **trust the workspace** — this lets
 the research skills load, the MCP server start, and the required **`superpowers`**
-plugin install (the methodology's step-1 brainstorming depends on it; it's declared
+plugin install (the methodology's Plan-phase brainstorming depends on it; it's declared
 in `.claude/settings.json` and pulled from the official Anthropic marketplace on
 trust). Confirm the `multiomics-kg` server shows as connected by running `/mcp` in
 a Claude chat.
@@ -141,8 +141,9 @@ the lab subnet, or a version mismatch. Fix it before starting a research chat.
 ### 5. Start an analysis
 
 Open a new Claude chat and ask your research question. The `research-methodology`
-skill loads automatically and guides the work through a 6-step flow (question →
-KG data → framing → methods → analysis → evaluation). Everything Claude produces
+skill loads automatically and guides the work through a two-phase arc: a **Plan**
+phase (question → KG entries → enumerated framing, converged into `proposal.md`)
+and a **Run** phase (methods → analysis → evaluation). Everything Claude produces
 is saved under `analyses/` in **your** copy. Commit the `usage/` logs alongside
 your analysis commits (they help improve the tools).
 
